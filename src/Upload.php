@@ -44,7 +44,7 @@ class Upload {
     }
     
     
-    public function Upload($filename=null)
+    public function upload($filename=null)
     {
         $this->drawFileInfo();
         $this->checkFileError();
