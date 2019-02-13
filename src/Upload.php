@@ -26,6 +26,12 @@ class Upload {
     public $fileSize;
     public $fileTmpName;
     
+    /**
+     * 远程上传服务器地址
+     * @var string
+     */
+    public $serverUrl = null;
+    
     public function __construct()
     {
         
@@ -43,8 +49,14 @@ class Upload {
         return $this;
     }
     
+    public function setServerUrl($serverUrl)
+    {
+        $this->serverUrl = $serverUrl;
+        if(!$this->path)$this->path = '/tmp';
+        return $this;
+    }
     
-    public function upload($filename=null)
+    public function Upload($filename=null)
     {
         $this->drawFileInfo();
         $this->checkFileError();
@@ -60,11 +72,50 @@ class Upload {
             throw new \Exception('文件上传失败');
         }
         
+        if($this->serverUrl !== null){
+            return $this->remoteUpload();
+        }
+        
         $data = [];
-        $data['name'] = $this->newFileName;
-        $data['url']  = $this->path.$this->newFileName;
+        $data['name']  = $this->newFileName;
+        $data['title'] = $this->fileName;
+        $data['url']   = $this->path.$this->newFileName;
+        $data['size']  = $this->fileSize;
+        $data['type']  = $this->fileType;
         
         return $data;
+    }
+    
+    /**
+     * 远程上传
+     * 
+     * $result = json_encode(array('code'=>0, 'msg'=>'成功', 'name'=>...))
+     * 
+     * @throws \Exception
+     * @return mixed
+     */
+    private function remoteUpload()
+    {
+        $curl = curl_init();
+        $data = array($this->fieldName=>new \CURLFile(realpath($this->path.$this->newFileName), $this->fileType, $this->fileName));
+        curl_setopt($curl, CURLOPT_URL, $this->serverUrl);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        $result = curl_exec($curl);
+        curl_close($curl);
+        $res = @json_decode($result, true);
+        if(!isset($res['code'])){
+            throw new \Exception('远程上传返回数据格式不对');
+        }
+        
+        if($res['code'] != 0){
+            throw new \Exception($res['msg']);
+        }
+        
+        unset($res['code'], $res['msg']);
+        @unlink($this->path.$this->newFileName);
+        return $result;
     }
     
     private function drawFileInfo()
@@ -151,11 +202,11 @@ class Upload {
         }
         
         if(!is_dir($this->path)){
-            throw new \Exception("上传地址创建不成功");
+            throw new \Exception("上传目录创建失败");
         }
         
         if(!is_writable($this->path)){
-            throw new \Exception("上传地址不可写入");
+            throw new \Exception("上传目录不可写入");
         }
         
         $this->path = $this->path.'/';
@@ -200,7 +251,8 @@ class Upload {
     private function checkFileType()
     {
         if($this->type == 'image'){
-            if(!in_array($this->fileType, ['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif'])){
+            $fileTypeArr = ['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif'];
+            if(!in_array($this->fileType, $fileTypeArr)){
                 throw new \Exception("非法文件类型");
             }
         }
