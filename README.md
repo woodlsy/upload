@@ -1,6 +1,13 @@
 # upload
 PHP的上传类
 
+**安装**
+```
+composer require woodlsy/upload
+```
+
+
+
 **一、普通上传**
 ```html
 <form method="POST" enctype="multipart/form-data">
