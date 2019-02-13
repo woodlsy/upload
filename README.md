@@ -1,7 +1,7 @@
 # upload
 PHP的上传类
 
-使用方式：
+**普通上传**
 ```html
 <form method="POST" enctype="multipart/form-data">
     <input type="file" name="file" value=""/>
@@ -26,7 +26,7 @@ use woodlsy\upload\Upload;
     }
 ```
 
-#远程上传
+**远程上传**
 本地服务端代码:
 
 ```php
