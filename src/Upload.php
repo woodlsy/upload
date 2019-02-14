@@ -115,7 +115,7 @@ class Upload {
         
         unset($res['code'], $res['msg']);
         @unlink($this->path.$this->newFileName);
-        return $result;
+        return $res;
     }
     
     private function drawFileInfo()
@@ -198,11 +198,11 @@ class Upload {
         }
         
         if(!is_dir($this->path)){
-            @mkdir($this->path, '0777', true);
+            self::directory($this->path);
         }
         
         if(!is_dir($this->path)){
-            throw new \Exception("上传目录创建失败");
+            throw new \Exception("上传目录创建失败：".$this->path);
         }
         
         if(!is_writable($this->path)){
@@ -256,5 +256,14 @@ class Upload {
                 throw new \Exception("非法文件类型");
             }
         }
+    }
+    
+    /**
+     * 自动创建目录
+     * @param string $dir
+     * @return boolean
+     */
+    public static function directory( $dir ){
+        return  is_dir ( $dir ) or self::directory(dirname( $dir )) and  @mkdir ( $dir , 0777);
     }
 }
