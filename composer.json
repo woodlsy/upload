@@ -1,15 +1,17 @@
 {
-    "name": "woodlsy/upload",
-    "description": "php upload class",
-    "type": "library",
-    "license": "MIT",
-	"minimum-stability": "dev",
-    "require": {
-		"php": ">=7.0.0"
-	},
-	"autoload": {
-        "psr-4": {
-            "woodlsy\\upload\\": "src/"
-        }
+  "name": "woodlsy/upload",
+  "description": "php upload class",
+  "type": "library",
+  "license": "MIT",
+  "minimum-stability": "dev",
+  "require": {
+    "php": ">=7.0.0",
+    "ext-curl": "*",
+    "ext-json": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "woodlsy\\upload\\": "src/"
     }
+  }
 }

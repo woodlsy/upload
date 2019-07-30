@@ -120,7 +120,9 @@ class Upload {
     
     private function drawFileInfo()
     {
-        if(!isset($_FILES[$this->fieldName]))throw new \Exception('上传文件不存在！');
+        if(!isset($_FILES[$this->fieldName])){
+            throw new \Exception('上传文件不存在！');
+        }
         $this->fileInfo    = $_FILES[$this->fieldName];
         $this->fileName    = $this->fileInfo['name'];
         $this->fileType    = $this->fileInfo['type'];
@@ -224,7 +226,7 @@ class Upload {
         if(strpos('.', $filename) > 0){
             return $filename;
         }
-        return $filename.$this->getFileNameSuffix();
+        return $filename.'.'.$this->getFileNameSuffix();
     }
     
     private function createFileName()
