@@ -105,9 +105,10 @@ class Upload {
         fclose($fp);
 
         $this->newFileName = $this->getFileName($fileName);
-        if(!move_uploaded_file($this->fileTmpName, $this->path.'/'.$this->newFileName)){
+        if(!copy($this->fileTmpName, $this->path.'/'.$this->newFileName)){
             throw new \Exception('文件上传失败');
         }
+        unlink($this->fileTmpName);
 
         $data = [];
         $data['url']   = $this->path.$this->newFileName;
