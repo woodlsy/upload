@@ -56,14 +56,14 @@ class Upload {
         return $this;
     }
     
-    public function Upload($filename=null)
+    public function Upload($fileName=null)
     {
         $this->drawFileInfo();
         $this->checkFileError();
         $this->checkFileSize();
         $this->checkPath();
         $this->checkFileType();
-        $this->newFileName = $this->getFileName($filename);
+        $this->newFileName = $this->getFileName($fileName);
         if(file_exists($this->path.$this->newFileName)){
             throw new \Exception('该文件名已存在');
         }
@@ -83,6 +83,33 @@ class Upload {
         $data['size']  = $this->fileSize;
         $data['type']  = $this->fileType;
         
+        return $data;
+    }
+
+    /**
+     * 下载远程图片
+     *
+     * @param      $url
+     * @param null $fileName
+     * @return array
+     * @throws \Exception
+     */
+    public function urlUpload($url, $fileName = null)
+    {
+        $imgData = file_get_contents($url);
+        $this->newFileName = $this->getFileName($fileName);
+        $this->fileTmpName = '/tmp/'.$this->newFileName;
+        $fp = @fopen($this->fileTmpName, 'w');
+        @fwrite($fp, $imgData);
+        fclose($fp);
+
+        if(!move_uploaded_file($this->fileTmpName, $this->path.$this->newFileName)){
+            throw new \Exception('文件上传失败');
+        }
+
+        $data = [];
+        $data['url']   = $this->path.$this->newFileName;
+
         return $data;
     }
     
