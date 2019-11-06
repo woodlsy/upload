@@ -97,13 +97,15 @@ class Upload {
     public function urlUpload($url, $fileName = null)
     {
         $imgData = file_get_contents($url);
-        $this->newFileName = $this->getFileName($fileName);
-        $this->fileTmpName = '/tmp/'.$this->newFileName;
+        $this->fileName = end(explode('/', $url));
+        $this->fileName = current(explode('?', $this->fileName));
+        $this->fileTmpName = '/tmp/'.$this->fileName;
         $fp = @fopen($this->fileTmpName, 'w');
         @fwrite($fp, $imgData);
         fclose($fp);
 
-        if(!move_uploaded_file($this->fileTmpName, $this->path.$this->newFileName)){
+        $this->newFileName = $this->getFileName($fileName);
+        if(!move_uploaded_file($this->fileTmpName, $this->path.'/'.$this->newFileName)){
             throw new \Exception('文件上传失败');
         }
 
