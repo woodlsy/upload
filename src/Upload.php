@@ -133,6 +133,12 @@ class Upload {
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
         $result = curl_exec($curl);
+        if(curl_errno($curl))
+        {
+            $errorMsg = curl_error($curl);
+            curl_close($curl);
+            throw new \Exception($errorMsg);
+        }
         curl_close($curl);
         $res = @json_decode($result, true);
         if(!isset($res['code'])){
