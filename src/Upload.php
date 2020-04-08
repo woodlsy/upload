@@ -142,7 +142,7 @@ class Upload {
         curl_close($curl);
         $res = @json_decode($result, true);
         if(!isset($res['code'])){
-            throw new \Exception('远程上传返回数据格式不对');
+            throw new \Exception('远程上传返回数据格式不对'.$result);
         }
         
         if($res['code'] != 0){
