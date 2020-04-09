@@ -127,7 +127,7 @@ class Upload {
     private function remoteUpload()
     {
         $curl = curl_init();
-        $data = array($this->fieldName=>new \CURLFile(realpath($this->path.$this->newFileName), $this->fileType, $this->fileName));
+        $data = array('file'=>new \CURLFile(realpath($this->path.$this->newFileName), $this->fileType, $this->fileName));
         curl_setopt($curl, CURLOPT_URL, $this->serverUrl);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_POST, true);

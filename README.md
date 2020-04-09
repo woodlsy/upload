@@ -27,7 +27,7 @@ use woodlsy\upload\Upload;
          $path      = '/upload';    //上传文件保存地址
          $fileName  = time();       //上传文件名称，可不填，自动生成唯一文件名
          $fieldName = 'file';       //上传字段名称
-         $data = (new Upload())->setFieldName($fieldName)->setMaxSize($size)->setUploadPath($path)->upload(fileName);
+         $data = (new Upload())->setFieldName($fieldName)->setMaxSize($size)->setUploadPath($path)->upload($fileName);
     }catch (\Exception $e){
          echo '错误提示：'.$e->getMessage();
     }
