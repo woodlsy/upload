@@ -1,6 +1,8 @@
 <?php
 namespace woodlsy\upload;
 
+use Exception;
+
 class Upload {
     
     public $type = 'image';
@@ -65,11 +67,11 @@ class Upload {
         $this->checkFileType();
         $this->newFileName = $this->getFileName($fileName);
         if(file_exists($this->path.$this->newFileName)){
-            throw new \Exception('该文件名已存在');
+            throw new Exception('该文件名已存在');
         }
         
         if(!move_uploaded_file($this->fileTmpName, $this->path.$this->newFileName)){
-            throw new \Exception('文件上传失败');
+            throw new Exception('文件上传失败');
         }
         
         if($this->serverUrl !== null){
@@ -92,12 +94,13 @@ class Upload {
      * @param      $url
      * @param null $fileName
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function urlUpload($url, $fileName = null)
     {
         $imgData = file_get_contents($url);
-        $this->fileName = end(explode('/', $url));
+        $urlArr = explode('/', $url);
+        $this->fileName = end($urlArr);
         $this->fileName = current(explode('?', $this->fileName));
         $this->fileTmpName = '/tmp/'.$this->fileName;
         $fp = @fopen($this->fileTmpName, 'w');
@@ -106,7 +109,7 @@ class Upload {
 
         $this->newFileName = $this->getFileName($fileName);
         if(!copy($this->fileTmpName, $this->path.'/'.$this->newFileName)){
-            throw new \Exception('文件上传失败');
+            throw new Exception('文件上传失败');
         }
         unlink($this->fileTmpName);
 
@@ -121,7 +124,7 @@ class Upload {
      * 
      * $result = json_encode(array('code'=>0, 'msg'=>'成功', 'name'=>...))
      * 
-     * @throws \Exception
+     * @throws Exception
      * @return mixed
      */
     private function remoteUpload()
@@ -137,16 +140,16 @@ class Upload {
         {
             $errorMsg = curl_error($curl);
             curl_close($curl);
-            throw new \Exception($errorMsg);
+            throw new Exception($errorMsg);
         }
         curl_close($curl);
         $res = @json_decode($result, true);
         if(!isset($res['code'])){
-            throw new \Exception('远程上传返回数据格式不对'.$result);
+            throw new Exception('远程上传返回数据格式不对'.$result);
         }
         
         if($res['code'] != 0){
-            throw new \Exception($res['msg']);
+            throw new Exception($res['msg']);
         }
         
         unset($res['code'], $res['msg']);
@@ -157,7 +160,7 @@ class Upload {
     private function drawFileInfo()
     {
         if(!isset($_FILES[$this->fieldName])){
-            throw new \Exception('上传文件不存在！');
+            throw new Exception('上传文件不存在！');
         }
         $this->fileInfo    = $_FILES[$this->fieldName];
         $this->fileName    = $this->fileInfo['name'];
@@ -166,37 +169,44 @@ class Upload {
         $this->fileSize    = $this->fileInfo['size'];
         $this->fileTmpName = $this->fileInfo['tmp_name'];
     }
-    
+
+    /**
+     * 检测上传文件
+     *
+     * @author yls
+     * @return bool
+     * @throws Exception
+     */
     private function checkFileError()
     {
         switch ($this->fileError) {
             case UPLOAD_ERR_INI_SIZE:
                 $message = "上传文件大小超出了系统配置的upload_max_filesize大小";
-                throw new \Exception($message);
+                throw new Exception($message);
                 break;
             case UPLOAD_ERR_FORM_SIZE:
                 $message = "The uploaded file exceeds the MAX_FILE_SIZE directive that was specified in the HTML form";
-                throw new \Exception($message);
+                throw new Exception($message);
                 break;
             case UPLOAD_ERR_PARTIAL:
                 $message = "The uploaded file was only partially uploaded";
-                throw new \Exception($message);
+                throw new Exception($message);
                 break;
             case UPLOAD_ERR_NO_FILE:
                 $message = "No file was uploaded";
-                throw new \Exception($message);
+                throw new Exception($message);
                 break;
             case UPLOAD_ERR_NO_TMP_DIR:
                 $message = "Missing a temporary folder";
-                throw new \Exception($message);
+                throw new Exception($message);
                 break;
             case UPLOAD_ERR_CANT_WRITE:
                 $message = "Failed to write file to disk";
-                throw new \Exception($message);
+                throw new Exception($message);
                 break;
             case UPLOAD_ERR_EXTENSION:
                 $message = "File upload stopped by extension";
-                throw new \Exception($message);
+                throw new Exception($message);
                 break;
         
             default:
@@ -210,7 +220,7 @@ class Upload {
     {
         $size = $this->getSizeByte();
         if($this->fileSize > $size){
-            throw new \Exception("文件大小不能大于{$this->maxSize}");
+            throw new Exception("文件大小不能大于{$this->maxSize}");
         }
     }
     
@@ -227,8 +237,7 @@ class Upload {
     private function checkPath()
     {
         if(!$this->path){
-            throw new \Exception("未设置上传路径");
-            return false;
+            throw new Exception("未设置上传路径");
         }
         
         if(substr($this->path, -1) == '/' || substr($this->path, -1) == '\\'){
@@ -240,11 +249,11 @@ class Upload {
         }
         
         if(!is_dir($this->path)){
-            throw new \Exception("上传目录创建失败：".$this->path);
+            throw new Exception("上传目录创建失败：".$this->path);
         }
         
         if(!is_writable($this->path)){
-            throw new \Exception("上传目录不可写入");
+            throw new Exception("上传目录不可写入");
         }
         
         $this->path = $this->path.'/';
@@ -289,9 +298,9 @@ class Upload {
     private function checkFileType()
     {
         if($this->type == 'image'){
-            $fileTypeArr = ['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif'];
+            $fileTypeArr = ['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/jpg'];
             if(!in_array($this->fileType, $fileTypeArr)){
-                throw new \Exception("非法文件类型");
+                throw new Exception("非法文件类型");
             }
         }
     }
