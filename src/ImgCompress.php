@@ -54,21 +54,39 @@ class ImgCompress
     {
         if (true === $auto) { // 自动缩放
             if (empty($width)) {
-                $percent            = round($height / $this->imageInfo['height'], 2);
-                $this->canvasWidth  = (int) ($this->imageInfo['width'] * $percent);
-                $this->canvasHeight = $height;
-            }elseif (empty($height)) {
-                $percent            = round($width / $this->imageInfo['width'], 2);
-                $this->canvasHeight  = (int) ($this->imageInfo['height'] * $percent);
-                $this->canvasWidth = $width;
-            } else {
-                if ($width > $height) {
-                    $percent = round($height / $this->imageInfo['height'], 2);
+                if ($height >= $this->imageInfo['height']) {
+                    $this->canvasWidth  = $this->imageInfo['width'];
+                    $this->canvasHeight = $this->imageInfo['height'];
                 } else {
-                    $percent = round($width / $this->imageInfo['width'], 2);
+                    $percent            = round($height / $this->imageInfo['height'], 2);
+                    $this->canvasWidth  = (int) ($this->imageInfo['width'] * $percent);
+                    $this->canvasHeight = $height;
                 }
-                $this->canvasWidth  = (int) ($this->imageInfo['width'] * $percent);
-                $this->canvasHeight = (int) ($this->imageInfo['height'] * $percent);
+            }elseif (empty($height)) {
+                if ($width >= $this->imageInfo['width']) {
+                    $this->canvasWidth  = $this->imageInfo['width'];
+                    $this->canvasHeight = $this->imageInfo['height'];
+                } else {
+                    $percent            = round($width / $this->imageInfo['width'], 2);
+                    $this->canvasHeight  = (int) ($this->imageInfo['height'] * $percent);
+                    $this->canvasWidth = $width;
+                }
+            }elseif (empty($width) && empty($height)) {
+                $this->canvasWidth  = $this->imageInfo['width'];
+                $this->canvasHeight = $this->imageInfo['height'];
+            } else {
+                if ($width >= $this->imageInfo['width'] && $height >= $this->imageInfo['height']) {
+                    $this->canvasWidth  = $this->imageInfo['width'];
+                    $this->canvasHeight = $this->imageInfo['height'];
+                } else {
+                    if ($width > $height) {
+                        $percent = round($height / $this->imageInfo['height'], 2);
+                    } else {
+                        $percent = round($width / $this->imageInfo['width'], 2);
+                    }
+                    $this->canvasWidth  = (int) ($this->imageInfo['width'] * $percent);
+                    $this->canvasHeight = (int) ($this->imageInfo['height'] * $percent);
+                }
             }
         } elseif (!empty($height)) { // 按固定宽高缩放
             $this->canvasWidth  = $width;
