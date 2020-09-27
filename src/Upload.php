@@ -50,9 +50,9 @@ class Upload
      */
     public $serverUrl = null;
 
-    public function __construct()
+    public function __construct($type = 'image')
     {
-
+        $this->type = $type;
     }
 
     public function setFieldName($fieldName)
@@ -341,9 +341,11 @@ class Upload
         if ($this->type == 'image') {
             $fileTypeArr = ['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/jpg'];
         } elseif ($this->type == 'video') {
-            $fileTypeArr = ['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/jpg'];
+            $fileTypeArr = ['video/mp4', 'video/x-flv', 'video/3gpp', 'video/x-msvideo', 'video/x-ms-wmv', 'video/quicktime', 'video/x-msvideo', 'video/x-sgi-movie'];
+        } else {
+            $fileTypeArr = [];
         }
-        if (!empty($fileTypeArr) && !in_array($this->fileType, $fileTypeArr)) {
+        if (!empty($fileTypeArr) && !in_array($this->fileType, $fileTypeArr, true)) {
             throw new Exception("非法文件类型");
         }
     }
