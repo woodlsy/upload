@@ -128,6 +128,7 @@ class ImgCompress
 
         $fun         = "imagecreatefrom" . $this->imageInfo['type'];
         $this->image = $fun($this->src);
+        imagesavealpha($this->image,true);       //这里很重要;
         $this->_thumpImage();
     }
 
@@ -137,6 +138,8 @@ class ImgCompress
     private function _thumpImage()
     {
         $image_thump = imagecreatetruecolor($this->canvasWidth, $this->canvasHeight);
+        imagealphablending($image_thump,false);//这里很重要,意思是不合并颜色,直接用$img图像颜色替换,包括透明色;
+        imagesavealpha($image_thump,true);     //这里很重要,意思是不要丢了$thumb图像的透明色;
         //将原图复制带图片载体上面，并且按照一定比例压缩,极大的保持了清晰度
         imagecopyresampled($image_thump, $this->image, 0, 0, 0, 0, $this->canvasWidth, $this->canvasHeight, $this->imageInfo['width'], $this->imageInfo['height']);
         imagedestroy($this->image);
