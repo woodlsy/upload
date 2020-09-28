@@ -18,6 +18,7 @@ class ImgCompress
      * @var int 画布高度
      */
     private $canvasHeight;
+    private $isCompress = true;
 
 
     /**
@@ -53,19 +54,23 @@ class ImgCompress
     public function compressImg($width, $height = 0, $auto = false)
     {
         if (true === $auto) { // 自动缩放
-            if (empty($width)) {
+            if (empty($width) && !empty($height)) {
                 if ($height >= $this->imageInfo['height']) {
-                    $this->canvasWidth  = $this->imageInfo['width'];
-                    $this->canvasHeight = $this->imageInfo['height'];
+                    $this->isCompress = false;
+                    return $this;
+//                    $this->canvasWidth  = $this->imageInfo['width'];
+//                    $this->canvasHeight = $this->imageInfo['height'];
                 } else {
                     $percent            = round($height / $this->imageInfo['height'], 2);
                     $this->canvasWidth  = (int) ($this->imageInfo['width'] * $percent);
                     $this->canvasHeight = $height;
                 }
-            }elseif (empty($height)) {
+            }elseif (!empty($width) && empty($height)) {
                 if ($width >= $this->imageInfo['width']) {
-                    $this->canvasWidth  = $this->imageInfo['width'];
-                    $this->canvasHeight = $this->imageInfo['height'];
+                    $this->isCompress = false;
+                    return $this;
+//                    $this->canvasWidth  = $this->imageInfo['width'];
+//                    $this->canvasHeight = $this->imageInfo['height'];
                 } else {
                     $percent            = round($width / $this->imageInfo['width'], 2);
                     $this->canvasHeight  = (int) ($this->imageInfo['height'] * $percent);
@@ -107,6 +112,9 @@ class ImgCompress
      */
     public function saveImg($saveName)
     {
+        if (false === $this->isCompress) {
+            return true;
+        }
         return $this->_saveImage($saveName);
     }
 
