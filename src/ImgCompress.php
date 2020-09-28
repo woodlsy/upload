@@ -113,7 +113,7 @@ class ImgCompress
     public function saveImg($saveName)
     {
         if (false === $this->isCompress) {
-            return true;
+            return move_uploaded_file($this->src, $saveName);
         }
         return $this->_saveImage($saveName);
     }
