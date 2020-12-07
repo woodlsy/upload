@@ -49,10 +49,16 @@ class ImgCompress
      *                   为true时是自动缩放，width为0时，以固定高度等比例缩放；
      *                   height为0时，以固定宽度等比例缩放；
      *                  都不为0时，以原图像最长的一边固定为width或height，等比例缩放（即width和height构成一盒子，新图像最长的一边不能超出盒子）；
+     * @param bool $jumpAnimatedGif true 跳过gif动画，不压缩
      * @return $this
      */
-    public function compressImg($width, $height = 0, $auto = false)
+    public function compressImg($width, $height = 0, $auto = false, $jumpAnimatedGif = true)
     {
+        $isAnimatedGif = $this->isAnimatedGif($this->src);
+        if (true === $jumpAnimatedGif && true === $isAnimatedGif) {
+            $this->isCompress = false;
+            return $this;
+        }
         if (true === $auto) { // 自动缩放
             if (empty($width) && !empty($height)) {
                 if ($height >= $this->imageInfo['height']) {
@@ -101,6 +107,21 @@ class ImgCompress
         }
         $this->_openImage();
         return $this;
+    }
+
+    /**
+     * 判断是否是gif动画
+     *
+     * @author yls
+     * @param $filename
+     * @return bool
+     */
+    public function isAnimatedGif($filename)
+    {
+        $fp = fopen($filename, 'rb');
+        $fileContent = fread($fp, filesize($filename));
+        fclose($fp);
+        return strpos($fileContent, chr(0x21) . chr(0xff) . chr(0x0b) . 'NETSCAPE2.0') !== FALSE;
     }
 
     /**
@@ -200,7 +221,9 @@ class ImgCompress
      */
     public function __destruct()
     {
-        imagedestroy($this->image);
+        if ($this->image) {
+            imagedestroy($this->image);
+        }
     }
 
 }
