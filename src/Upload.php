@@ -156,7 +156,7 @@ class Upload
         unlink($this->fileTmpName);
 
         $data        = [];
-        $data['url'] = $this->path . $this->newFileName;
+        $data['url'] = $this->path . '/' . $this->newFileName;
 
         return $data;
     }
