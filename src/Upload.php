@@ -3,6 +3,7 @@
 namespace woodlsy\upload;
 
 use Exception;
+use woodlsy\httpClient\HttpCurl;
 
 class Upload
 {
@@ -140,9 +141,8 @@ class Upload
      */
     public function urlUpload($url, $fileName = null)
     {
-        $imgData           = file_get_contents($url);
-        $urlArr            = explode('/', $url);
-        $this->fileName    = end($urlArr);
+        $imgData           = (new HttpCurl())->setUrl($url)->get();
+        $this->fileName    = pathinfo($url, PATHINFO_BASENAME);;
         $this->fileName    = current(explode('?', $this->fileName));
         $this->fileTmpName = '/tmp/' . $this->fileName;
         $fp                = @fopen($this->fileTmpName, 'w');

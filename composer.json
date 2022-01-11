@@ -8,7 +8,8 @@
     "php": ">=7.0.0",
     "ext-curl": "*",
     "ext-json": "*",
-    "ext-gd": "*"
+    "ext-gd": "*",
+    "woodlsy/http-client": "dev-master"
   },
   "autoload": {
     "psr-4": {
