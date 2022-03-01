@@ -64,25 +64,21 @@ class ImgCompress
                 if ($height >= $this->imageInfo['height']) {
                     $this->isCompress = false;
                     return $this;
-//                    $this->canvasWidth  = $this->imageInfo['width'];
-//                    $this->canvasHeight = $this->imageInfo['height'];
                 } else {
                     $percent            = round($height / $this->imageInfo['height'], 2);
                     $this->canvasWidth  = (int) ($this->imageInfo['width'] * $percent);
                     $this->canvasHeight = $height;
                 }
-            }elseif (!empty($width) && empty($height)) {
+            } elseif (!empty($width) && empty($height)) {
                 if ($width >= $this->imageInfo['width']) {
                     $this->isCompress = false;
                     return $this;
-//                    $this->canvasWidth  = $this->imageInfo['width'];
-//                    $this->canvasHeight = $this->imageInfo['height'];
                 } else {
                     $percent            = round($width / $this->imageInfo['width'], 2);
-                    $this->canvasHeight  = (int) ($this->imageInfo['height'] * $percent);
-                    $this->canvasWidth = $width;
+                    $this->canvasHeight = (int) ($this->imageInfo['height'] * $percent);
+                    $this->canvasWidth  = $width;
                 }
-            }elseif (empty($width) && empty($height)) {
+            } elseif (empty($width) && empty($height)) {
                 $this->canvasWidth  = $this->imageInfo['width'];
                 $this->canvasHeight = $this->imageInfo['height'];
             } else {
@@ -90,13 +86,9 @@ class ImgCompress
                     $this->canvasWidth  = $this->imageInfo['width'];
                     $this->canvasHeight = $this->imageInfo['height'];
                 } else {
-                    if ($width > $height) {
-                        $percent = round($height / $this->imageInfo['height'], 2);
-                    } else {
-                        $percent = round($width / $this->imageInfo['width'], 2);
-                    }
-                    $this->canvasWidth  = (int) ($this->imageInfo['width'] * $percent);
-                    $this->canvasHeight = (int) ($this->imageInfo['height'] * $percent);
+                    $percent            = $width > $height ? $height / $this->imageInfo['height'] : $width / $this->imageInfo['width'];
+                    $this->canvasWidth  = $width > $height ? (int) ($this->imageInfo['width'] * $percent) : $width;
+                    $this->canvasHeight = $width > $height ? $height : (int) ($this->imageInfo['height'] * $percent);
                 }
             }
         } elseif (!empty($height)) { // 按固定宽高缩放
@@ -118,7 +110,7 @@ class ImgCompress
      */
     public function isAnimatedGif($filename)
     {
-        $fp = fopen($filename, 'rb');
+        $fp          = fopen($filename, 'rb');
         $fileContent = fread($fp, filesize($filename));
         fclose($fp);
         return strpos($fileContent, chr(0x21) . chr(0xff) . chr(0x0b) . 'NETSCAPE2.0') !== FALSE;
@@ -157,7 +149,7 @@ class ImgCompress
 
         $fun         = "imagecreatefrom" . $this->imageInfo['type'];
         $this->image = $fun($this->src);
-        imagesavealpha($this->image,true);       //这里很重要;
+        imagesavealpha($this->image, true);       //这里很重要;
         $this->_thumpImage();
     }
 
@@ -167,8 +159,8 @@ class ImgCompress
     private function _thumpImage()
     {
         $image_thump = imagecreatetruecolor($this->canvasWidth, $this->canvasHeight);
-        imagealphablending($image_thump,false);//这里很重要,意思是不合并颜色,直接用$img图像颜色替换,包括透明色;
-        imagesavealpha($image_thump,true);     //这里很重要,意思是不要丢了$thumb图像的透明色;
+        imagealphablending($image_thump, false);//这里很重要,意思是不合并颜色,直接用$img图像颜色替换,包括透明色;
+        imagesavealpha($image_thump, true);     //这里很重要,意思是不要丢了$thumb图像的透明色;
         //将原图复制带图片载体上面，并且按照一定比例压缩,极大的保持了清晰度
         imagecopyresampled($image_thump, $this->image, 0, 0, 0, 0, $this->canvasWidth, $this->canvasHeight, $this->imageInfo['width'], $this->imageInfo['height']);
         imagedestroy($this->image);
