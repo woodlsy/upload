@@ -339,7 +339,7 @@ class Upload
     private function checkFileType()
     {
         if ($this->type == 'image') {
-            $fileTypeArr = ['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/jpg'];
+            $fileTypeArr = ['image/jpeg', 'image/pjpeg', 'image/png', 'image/gif', 'image/jpg', 'image/webp', 'image/bmp'];
         } elseif ($this->type == 'video') {
             $fileTypeArr = ['video/mp4', 'video/x-flv', 'video/3gpp', 'video/x-msvideo', 'video/x-ms-wmv', 'video/quicktime', 'video/x-msvideo', 'video/x-sgi-movie'];
         } else {
